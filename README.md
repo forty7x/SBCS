@@ -17,5 +17,5 @@ The chord synthesizer works really well and produces clear sounds with recogniza
 ### Challenges and Limitations
 As expected, due to time constraints, the original idea was too complicated for the time alloted. But I have implemented the two most important features according to the TA notes on my project proposal. The chord synthesizer using additive synthesis. Another idea I had was to synthesize real word instrument sounds like guitar but again I wasnt able due to lack of time. I would like to implement these features in the future and be able to play realisitc sounding instrument sounds.
 
-
-
+### How to Run the project
+This is fairly straightforward and no build is necessary. Just run the python file and it will work. The menu is pretty self-explanatory too.
