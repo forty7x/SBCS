@@ -14,11 +14,27 @@ def generate_sine_wave(frequency, duration=1, amplitude=1.0, phase=0, sample_rat
     note = np.sin(2 * np.pi * frequency * t + phase) * amplitude
     return note
 
+# These 3 functions decide which decay to use for the harmonic wave generation
+def exponential_decay(n, decay_rate=0.5):
+    return np.exp(-decay_rate * n)
+
+def linear_decay(n, start=1.0, step=0.1):
+    return max(start - step * (n-1), 0)
+
+def inverse_decay(n):
+    return 1.0 / n
+
 # Function to generate harmonics for a given fundamental frequency
-def generate_harmonics(fundamental_freq, num_harmonics=8, sample_rate=44100, duration=1):
+def generate_harmonics(fundamental_freq, num_harmonics=8, sample_rate=44100, duration=1, decay_choice =3):
     harmonics = np.zeros(int(sample_rate * duration))
     for n in range(1, num_harmonics + 1):
-        amplitude = 1.0 / n  # Simple amplitude decay; customize as needed
+        if decay_choice == 1:
+            amplitude = exponential_decay(n)
+        elif decay_choice == 2:
+            amplitude = linear_decay(n)
+        else:
+            amplitude = inverse_decay(n)
+
         harmonic_freq = fundamental_freq * n
         harmonics += generate_sine_wave(harmonic_freq, duration, amplitude, sample_rate=sample_rate)
     return harmonics
@@ -49,9 +65,9 @@ def play_single_note(frequency, duration=1):
     os.remove(temp_file_name)
 
 # Function adjusted to play a single note with harmonics using additive synthesis
-def play_note_with_harmonics(frequency, duration=1):
+def play_note_with_harmonics(frequency, duration=1, choice =3):
     sample_rate = 44100
-    note = generate_harmonics(frequency, sample_rate=sample_rate, duration=duration)
+    note = generate_harmonics(frequency, sample_rate=sample_rate, duration=duration, decay_choice = choice)
     note = np.int16((note / np.max(np.abs(note))) * 32767)
 
     temp_file_name = tempfile.mktemp(suffix='.wav', dir='.')
@@ -117,11 +133,18 @@ def demo_note_versions():
     selected_note = notes[note_selection]
     frequency = note_to_frequency(selected_note)
 
+    print("Select a decay model for the harmonics:")
+    print("1. Linear Decay")
+    print("2. Exponential Decay")
+    print("3. Inverse Decay")
+    
+    choice = int(input("Enter your choice (1, 2, or 3): "))
+
     print(f"Demoing the note {selected_note} without harmonics.")
     play_single_note(frequency, duration=2)
 
     print(f"Demoing the note {selected_note} with harmonics.")
-    play_note_with_harmonics(frequency, duration=2)
+    play_note_with_harmonics(frequency, duration=2, choice = choice)
 
 # Function will play the given chord by playing the notes together depending on the 
 # chosen scale: minor/major
